@@ -29,7 +29,7 @@ class BuildCauseMacroTest {
 
     @Test
     void shouldReturnNA_whenNoCauseActionIsFound() throws Exception {
-        when(build.getAction(CauseAction.class)).thenReturn(null);
+        setupActionableGetActionStubs(null);
 
         assertEquals("N/A", buildCauseMacro.evaluate(build, listener, BuildCauseMacro.MACRO_NAME));
     }
@@ -37,7 +37,7 @@ class BuildCauseMacroTest {
     @Test
     void shouldReturnNA_whenThereIsNoCause() throws Exception {
         CauseAction causeAction = mock(CauseAction.class);
-        when(build.getAction(CauseAction.class)).thenReturn(causeAction);
+        setupActionableGetActionStubs(causeAction);
 
         assertEquals("N/A", buildCauseMacro.evaluate(build, listener, BuildCauseMacro.MACRO_NAME));
     }
@@ -45,7 +45,7 @@ class BuildCauseMacroTest {
     @Test
     void shouldReturnSingleCause() throws Exception {
         CauseAction causeAction = new CauseAction(new CauseStub("Cause1"));
-        when(build.getAction(CauseAction.class)).thenReturn(causeAction);
+        setupActionableGetActionStubs(causeAction);
 
         assertEquals("Cause1", buildCauseMacro.evaluate(build, listener, BuildCauseMacro.MACRO_NAME));
     }
@@ -60,7 +60,7 @@ class BuildCauseMacroTest {
 		        add(new CauseStub("Cause3"));
 	        }
         });
-        when(build.getAction(CauseAction.class)).thenReturn(causeAction);
+        setupActionableGetActionStubs(causeAction);
 
         assertEquals("Cause1, Cause2, Cause3", buildCauseMacro.evaluate(build, listener, BuildCauseMacro.MACRO_NAME));
     }
@@ -80,7 +80,7 @@ class BuildCauseMacroTest {
 	        }
         });
 
-        when(build.getAction(CauseAction.class)).thenReturn(causeAction);
+        setupActionableGetActionStubs(causeAction);
         buildCauseMacro.data = "BUILD_NUMBER";
         assertEquals("3", buildCauseMacro.evaluate(build, listener, BuildCauseMacro.MACRO_NAME));
         buildCauseMacro.data = "PROJECT_NAME";
@@ -102,5 +102,9 @@ class BuildCauseMacroTest {
         public String getShortDescription() {
             return name;
         }
+    }
+
+    private void setupActionableGetActionStubs(CauseAction getActionReturnValue) {
+        when(build.getAction(CauseAction.class)).thenReturn(getActionReturnValue);
     }
 }
